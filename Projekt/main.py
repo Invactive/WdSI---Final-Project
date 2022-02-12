@@ -14,16 +14,24 @@ def load_data():
     ann_dir = os.path.join(parent, 'train/annotations')
     # print("Annot directory", ann_dir)
     ann_list = []
-    # print(os.listdir(anno_dir))
+    # print(os.listdir(ann_dir))
     for file in os.listdir(ann_dir):
         ann_dict = {}
+        xmin_tmp = []
+        xmax_tmp = []
+        ymin_tmp = []
+        ymax_tmp = []
         root = ET.parse(os.path.join(ann_dir, file)).getroot()
         ann_dict['filename'] = file
-        ann_dict['xmin'] = root.find('object/bndbox/xmin').text
-        ann_dict['xmax'] = root.find('object/bndbox/xmax').text
-        ann_dict['ymin'] = root.find('object/bndbox/ymin').text
-        ann_dict['ymax'] = root.find('object/bndbox/ymax').text
-        # print(ann_dict)
+        for field in root.findall('object'):
+            xmin_tmp.append(field.find('bndbox/xmin').text)
+            xmax_tmp.append(field.find('bndbox/xmax').text)
+            ymin_tmp.append(field.find('bndbox/ymin').text)
+            ymax_tmp.append(field.find('bndbox/ymax').text)
+        ann_dict['xmin'] = xmin_tmp
+        ann_dict['xmax'] = xmax_tmp
+        ann_dict['ymin'] = ymin_tmp
+        ann_dict['ymax'] = ymax_tmp
         ann_list.append(ann_dict)
     return pandas.DataFrame(ann_list)
 
@@ -33,6 +41,7 @@ def load_data():
 def main():
     df = load_data()
     print(df)
+
 
 
 
